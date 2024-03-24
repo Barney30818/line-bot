@@ -52,11 +52,14 @@ Testing setup and execution is left to the developer.
 ## Deploy
 
 
-### Deploy to Production
+### Deploy to AWS on local
 
-Deployment to network-one-production is done by GitHub Actions on a push to the main branch
+Run the following command to deploy the application:
 
-Ensure that the [.github/workflows/release.yaml](.github/workflows/release.yaml) has the TODO addressed to enable deployment to production
+    aws configure
+    sls deploy --stage {stageName} --verbose
+
+note: When deploy successfully, copy the url of `line-events` API, and paste to the Line developers -> Webhook URL
 
 ## API Specification
 
