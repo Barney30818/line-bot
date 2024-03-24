@@ -57,3 +57,32 @@ Testing setup and execution is left to the developer.
 Deployment to network-one-production is done by GitHub Actions on a push to the main branch
 
 Ensure that the [.github/workflows/release.yaml](.github/workflows/release.yaml) has the TODO addressed to enable deployment to production
+
+## API Specification
+
+This document outlines the usage and specifications of two APIs. These APIs are designed for handling events from the LINE platform and broadcasting messages to users subscribed to a specific official account.
+
+### /line-events
+
+This API acts as a webhook for the LINE Bot, receiving and processing various events from the LINE platform.
+
+#### Request Method
+
+`POST`
+
+### /notifications
+
+This API allows for broadcasting messages to all users who have subscribed to the specific official account through a POST request.
+
+#### Request Method
+
+`POST`
+
+#### Request Body
+
+The body of the request should be in JSON format, containing a single field `message` which is a string representing the message you wish to broadcast. For example:
+
+```json
+{
+  "message": "Did you take your fish oil today?\nPlease enter\n1. Yes\n2. No\nIf you haven't taken it or haven't responded, I will remind you again in 10 minutes."
+}
