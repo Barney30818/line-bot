@@ -1,5 +1,5 @@
 # The service name should be a static string and should NOT be prefixed or suffixed with any dynamic variables, such as stage name.
-service: public-example-app # TODO Pick a name.
+service: lint-bot # TODO Pick a name.
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out docs.serverless.com for more details
@@ -52,7 +52,8 @@ provider:
 
   # You can define service wide environment variables here
   environment:
-    ENVVAR1: "env-var-1"
+    CHANNEL_SECRET: f2aeb1487d679a1655fb230bb516db94
+    CHANNEL_TOKEN: 1fOCBx1XiL91H2gvdMHzrA5kPZ6R31A7+1O8xh071vvKDUL//mD2wUSaDy9lCMfgZWzvThILfmV3diqqnMwvIMywXWg1U//PdLdLItwgt2w5ZNsT0uWBKBE//A3l+4z9AcsdKFNq+iYlvvZNnjtipwdB04t89/1O/w1cDnyilFU=
 
   # You can restrict API to only allow connection with service platform
   apiGateway:
@@ -67,19 +68,27 @@ package:
   individually: true
 
 functions:
-  # TODO change hello example with your new app
-  hello:
+  event-handler:
     runtime: provided.al2023
     package:
-      artifact: ${env:ARTIFACT_LOC, 'func'}/hello.zip
+      artifact: ${env:ARTIFACT_LOC, 'func'}/event-handler.zip
     handler: bootstrap
     events:
       - http:
-          path: /hello
-          method: get
+          path: /line-events
+          method: post
     # vpc: # Enable this block if service needs to be deployed into VPC
     #   securityGroupIds:
     #   subnetIds:
+  push-message:
+    runtime: provided.al2023
+    package:
+      artifact: ${env:ARTIFACT_LOC, 'func'}/push-message.zip
+    handler: bootstrap
+    events:
+      - http:
+          path: /notifications
+          method: post
 
 # TODO define CloudFormation resource if you need
 resources:
