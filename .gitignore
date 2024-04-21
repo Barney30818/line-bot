@@ -37,6 +37,8 @@ go.work
 # Ignore build file
 bin/
 **/handler
+*.zip
+bootstrap
 
 # Ignore npm package
 node_modules/
