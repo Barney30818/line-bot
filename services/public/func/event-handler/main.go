@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"net/http"
 	"os"
 
@@ -17,7 +18,44 @@ const (
 	TIMESTAMP = "timestamp"
 )
 
+type EnvVars struct {
+	ChannelSecret        string
+	ChannelToken         string
+	pushMessageLambdaArn string
+}
+
+func getEnvironmentVariables() (envVars *EnvVars, err error) {
+	channelSecret, ok := os.LookupEnv("CHANNEL_SECRET")
+	if !ok {
+		return nil, errors.New("CHANNEL_SECRET is not set")
+	}
+
+	channelToken, ok := os.LookupEnv("CHANNEL_TOKEN")
+	if !ok {
+		return nil, errors.New("CHANNEL_TOKEN is not set")
+	}
+
+	pushMessageLambdaArn, ok := os.LookupEnv("PUSH_MESSAGE_LAMBDA_ARN")
+	if !ok {
+		return nil, errors.New("PUSH_MESSAGE_LAMBDA_ARN is not set")
+	}
+	return &EnvVars{
+		ChannelSecret:        channelSecret,
+		ChannelToken:         channelToken,
+		pushMessageLambdaArn: pushMessageLambdaArn,
+	}, nil
+
+}
+
 func Handler(request *events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	envVars, err := getEnvironmentVariables()
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			Body:       err.Error(),
+			StatusCode: 500,
+		}, nil
+	}
+
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
@@ -49,8 +87,8 @@ func Handler(request *events.APIGatewayProxyRequest) (events.APIGatewayProxyResp
 
 	// 初始化 LINE Bot
 	bot, err := linebot.New(
-		os.Getenv("CHANNEL_SECRET"),
-		os.Getenv("CHANNEL_TOKEN"),
+		envVars.ChannelSecret,
+		envVars.ChannelToken,
 	)
 
 	if err != nil {

@@ -10,7 +10,7 @@ useDotenv: true
 provider:
   name: aws
   region: ${env:AWS_REGION, env:AWS_DEFAULT_REGION, 'us-east-1'}
-
+  stage: ${opt:stage, 'dev'} # default to 'dev' if no stage is provided
   endpointType: REGIONAL
   # deploymentBucket:
   #   name: ${ssm:/serverless-s3-bucket}
@@ -68,11 +68,17 @@ package:
   individually: true
 
 functions:
-  event-handler:
+  eventHandler:
     runtime: provided.al2023
     package:
       artifact: ${env:ARTIFACT_LOC, 'func'}/event-handler.zip
     handler: bootstrap
+    name: ${self:service}-${self:provider.stage}-event-handler
+    environment:
+      PUSH_MESSAGE_LAMBDA_ARN:
+        Fn::GetAtt:
+          - PushMessageLambdaFunction
+          - Arn
     events:
       - http:
           path: /line-events
@@ -80,15 +86,12 @@ functions:
     # vpc: # Enable this block if service needs to be deployed into VPC
     #   securityGroupIds:
     #   subnetIds:
-  push-message:
+  pushMessage:
     runtime: provided.al2023
     package:
       artifact: ${env:ARTIFACT_LOC, 'func'}/push-message.zip
     handler: bootstrap
-    events:
-      - http:
-          path: /notifications
-          method: post
+    name: ${self:service}-${self:provider.stage}-push-message
 
 # TODO define CloudFormation resource if you need
 resources:

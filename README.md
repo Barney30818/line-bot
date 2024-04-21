@@ -1,8 +1,6 @@
-# Vision One Container Security serverless application template
+# Line bot with serverless application
 
-If you find issues or improvements, please contribute back to the template repo 🙏
-
-_**Rewrite this README for your own application after initial setup**_
+This line bot is used for reminding you to do something by schedulely, you can enhance it whatever you want such as notification, receive and response message, or call other APIs...
 
 ## Setup
 
